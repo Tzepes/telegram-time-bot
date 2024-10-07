@@ -1,0 +1,26 @@
+{
+  "name": "telegram-timezone-bot",
+  "version": "1.0.0",
+  "description": "A telegram bot that converts a given time to local time for each user within a telegram chat",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start_indexjs": "node dist/index.js",
+    "start_botjs": "node dist/bot.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "axios": "^1.7.7",
+    "express": "^4.21.0",
+    "grammy": "^1.30.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
