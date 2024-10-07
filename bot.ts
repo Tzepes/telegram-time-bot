@@ -42,6 +42,12 @@ bot.command("menu", async (ctx) => {
   });
 });
 
+bot.command("add", async (ctx) => {
+  // `item` will be "apple pie" if a user sends "/add apple pie".
+  const item = ctx.match;
+  console.log(item);
+});
+
 //This handler processes back button on the menu
 bot.callbackQuery(backButton, async (ctx) => {
   //Update message content with corresponding menu section
@@ -69,17 +75,8 @@ bot.on("message", async (ctx) => {
       "text" in ctx.message ? ctx.message.text : ""
     }`,
   );
-
-  if (screaming && ctx.message.text) {
-    //Scream the message
-    await ctx.reply(ctx.message.text.toUpperCase(), {
-      entities: ctx.message.entities,
-    });
-  } else {
-    //This is equivalent to forwarding, without the sender's name
-    await ctx.copyMessage(ctx.message.chat.id);
-  }
 });
+
 
 //Start the Bot
 bot.start();
