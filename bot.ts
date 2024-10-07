@@ -1,70 +1,41 @@
 import { Bot, InlineKeyboard } from "grammy";
 import { BOT_TOKEN } from './secrets/bot_token.js';
-
-
-//Store bot screaming status
-let screaming = false;
+import { GetTimeAndZone, GetTimeInCountry } from './getTime.js'
+import { timeZoneAndCountry, Country } from './timeZonesList.js'
 
 //Create a new bot
 const bot = new Bot(BOT_TOKEN);
+const local_time = new Date();
+const timeWithZone = GetTimeAndZone();
 
 
-//This function handles the /scream command
-bot.command("scream", () => {
-   screaming = true;
- });
+bot.command("time", async(ctx) => ctx.reply(`It's ${timeWithZone}`));
+bot.command("time_details", async(ctx) => ctx.reply(`It's ${local_time}`))
 
-//This function handles /whisper command
-bot.command("whisper", () => {
-   screaming = false;
- });
+bot.on("message", async(ctx) => {
+  console.log(ctx.message); // => @botname
 
-//Pre-assign menu text
-const firstMenu = "<b>Menu 1</b>\n\nA beautiful menu with a shiny inline button.";
-const secondMenu = "<b>Menu 2</b>\n\nA better menu with even more shiny inline buttons.";
+  const botUsername = `@TimeSync`;
 
-//Pre-assign button text
-const nextButton = "Next";
-const backButton = "Back";
-const tutorialButton = "Tutorial";
+    // Checking if the message includes a mention of the bot
+  if (ctx.message.text && ctx.message.text.includes(botUsername)) {
+    const textAfterMention = ctx.message.text.trim().replace(`${botUsername}`, '').trim();
+      
+    // Get the first word after the mention
+    const firstWord = textAfterMention.split(' ')[0] as Country; // THIS MIGHT REQUIRE REVAMP
+    if (firstWord in timeZoneAndCountry) {
+      const timeZone = timeZoneAndCountry[firstWord];
+      const currentTime = GetTimeInCountry(timeZone);
 
-//Build keyboards
-const firstMenuMarkup = new InlineKeyboard().text(nextButton, nextButton);
- 
-const secondMenuMarkup = new InlineKeyboard().text(backButton, backButton).text(tutorialButton, "https://core.telegram.org/bots/tutorial");
-
-
-//This handler sends a menu with the inline buttons we pre-assigned above
-bot.command("menu", async (ctx) => {
-  await ctx.reply(firstMenu, {
-    parse_mode: "HTML",
-    reply_markup: firstMenuMarkup,
-  });
+      ctx.reply(`The time for ${firstWord} is ${currentTime}`);
+    } else {
+      ctx.reply(`No time zone found for ${firstWord}. Please check the country name.`);
+    }
+  }
 });
 
-bot.command("add", async (ctx) => {
-  // `item` will be "apple pie" if a user sends "/add apple pie".
-  const item = ctx.match;
-  console.log(item);
-});
-
-//This handler processes back button on the menu
-bot.callbackQuery(backButton, async (ctx) => {
-  //Update message content with corresponding menu section
-  await ctx.editMessageText(firstMenu, {
-    reply_markup: firstMenuMarkup,
-    parse_mode: "HTML",
-   });
- });
-
-//This handler processes next button on the menu
-bot.callbackQuery(nextButton, async (ctx) => {
-  //Update message content with corresponding menu section
-  await ctx.editMessageText(secondMenu, {
-    reply_markup: secondMenuMarkup,
-    parse_mode: "HTML",
-   });
- });
+// TODO
+// function time_zone_sync(user_time, user_country, list_of_countries_to_convert_for)
 
 
 //This function would be added to the dispatcher as a handler for messages coming from the Bot API
